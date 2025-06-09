@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdaptiveEQ - Web Audio Plugin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="plugin-container">
+        <header class="plugin-header">
+            <h1>Adaptive EQ</h1>
+            <div class="status-indicator">
+                <div class="led" id="powerLed"></div>
+                <span>Ready</span>
+            </div>
+        </header>
+        
+        <!-- Spectrum Analyzer -->
+        <section class="spectrum-section">
+            <canvas id="spectrumCanvas" width="860" height="80"></canvas>
+            <div class="freq-labels">
+                <span>20Hz</span>
+                <span>100Hz</span>
+                <span>1kHz</span>
+                <span>10kHz</span>
+                <span>20kHz</span>
+            </div>
+        </section>
+        
+        <!-- Control Bands -->
+        <div class="bands-container">
+            <!-- Low Band -->
+            <section class="band-section" data-band="low">
+                <h3>Low Band</h3>
+                <div class="band-controls">
+                    <label class="toggle-control">
+                        <input type="checkbox" id="lowEnabled" checked>
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">Enabled</span>
+                    </label>
+                    
+                    <div class="knob-row">
+                        <div class="knob-control">
+                            <div class="knob" data-param="lowThreshold" data-min="-60" data-max="0" data-value="-24">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Threshold</label>
+                            <span class="value">-24 dB</span>
+                        </div>
+                        
+                        <div class="knob-control">
+                            <div class="knob" data-param="lowRatio" data-min="1" data-max="10" data-value="4">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Ratio</label>
+                            <span class="value">4.0:1</span>
+                        </div>
+                        
+                        <div class="knob-control">
+                            <div class="knob" data-param="lowAttack" data-min="0.1" data-max="500" data-value="50">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Attack</label>
+                            <span class="value">50 ms</span>
+                        </div>
+                    </div>
+                    
+                    <div class="knob-row">
+                        <div class="knob-control">
+                            <div class="knob" data-param="lowRelease" data-min="5" data-max="2000" data-value="200">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Release</label>
+                            <span class="value">200 ms</span>
+                        </div>
+                        
+                        <div class="knob-control">
+                            <div class="knob" data-param="lowCrossover" data-min="20" data-max="1000" data-value="250">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Crossover</label>
+                            <span class="value">250 Hz</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Mid Band -->
+            <section class="band-section" data-band="mid">
+                <h3>Mid Band</h3>
+                <div class="band-controls">
+                    <label class="toggle-control">
+                        <input type="checkbox" id="midEnabled" checked>
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">Enabled</span>
+                    </label>
+                    
+                    <div class="knob-row">
+                        <div class="knob-control">
+                            <div class="knob" data-param="midThreshold" data-min="-60" data-max="0" data-value="-24">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Threshold</label>
+                            <span class="value">-24 dB</span>
+                        </div>
+                        
+                        <div class="knob-control">
+                            <div class="knob" data-param="midRatio" data-min="1" data-max="10" data-value="4">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Ratio</label>
+                            <span class="value">4.0:1</span>
+                        </div>
+                        
+                        <div class="knob-control">
+                            <div class="knob" data-param="midAttack" data-min="0.1" data-max="500" data-value="50">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Attack</label>
+                            <span class="value">50 ms</span>
+                        </div>
+                    </div>
+                    
+                    <div class="knob-row">
+                        <div class="knob-control">
+                            <div class="knob" data-param="midRelease" data-min="5" data-max="2000" data-value="200">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Release</label>
+                            <span class="value">200 ms</span>
+                        </div>
+                        
+                        <div class="knob-control">
+                            <div class="knob" data-param="midCrossover" data-min="1000" data-max="10000" data-value="4000">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Crossover</label>
+                            <span class="value">4.0 kHz</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- High Band -->
+            <section class="band-section" data-band="high">
+                <h3>High Band</h3>
+                <div class="band-controls">
+                    <label class="toggle-control">
+                        <input type="checkbox" id="highEnabled" checked>
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">Enabled</span>
+                    </label>
+                    
+                    <div class="knob-row">
+                        <div class="knob-control">
+                            <div class="knob" data-param="highThreshold" data-min="-60" data-max="0" data-value="-24">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Threshold</label>
+                            <span class="value">-24 dB</span>
+                        </div>
+                        
+                        <div class="knob-control">
+                            <div class="knob" data-param="highRatio" data-min="1" data-max="10" data-value="4">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Ratio</label>
+                            <span class="value">4.0:1</span>
+                        </div>
+                        
+                        <div class="knob-control">
+                            <div class="knob" data-param="highAttack" data-min="0.1" data-max="500" data-value="50">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Attack</label>
+                            <span class="value">50 ms</span>
+                        </div>
+                    </div>
+                    
+                    <div class="knob-row">
+                        <div class="knob-control">
+                            <div class="knob" data-param="highRelease" data-min="5" data-max="2000" data-value="200">
+                                <div class="knob-pointer"></div>
+                            </div>
+                            <label>Release</label>
+                            <span class="value">200 ms</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Global Controls and Presets -->
+        <div class="bottom-section">
+            <section class="global-controls">
+                <h3>Global Controls</h3>
+                <div class="knob-row">
+                    <div class="knob-control">
+                        <div class="knob" data-param="inputGain" data-min="-24" data-max="24" data-value="0">
+                            <div class="knob-pointer"></div>
+                        </div>
+                        <label>Input Gain</label>
+                        <span class="value">0.0 dB</span>
+                    </div>
+                    
+                    <div class="knob-control">
+                        <div class="knob" data-param="outputGain" data-min="-24" data-max="24" data-value="0">
+                            <div class="knob-pointer"></div>
+                        </div>
+                        <label>Output Gain</label>
+                        <span class="value">0.0 dB</span>
+                    </div>
+                    
+                    <div class="knob-control">
+                        <div class="knob" data-param="mix" data-min="0" data-max="100" data-value="100">
+                            <div class="knob-pointer"></div>
+                        </div>
+                        <label>Mix</label>
+                        <span class="value">100%</span>
+                    </div>
+                    
+                    <div class="knob-control">
+                        <div class="knob" data-param="sensitivity" data-min="0" data-max="100" data-value="50">
+                            <div class="knob-pointer"></div>
+                        </div>
+                        <label>Sensitivity</label>
+                        <span class="value">50%</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="preset-controls">
+                <h3>Presets</h3>
+                <select id="presetSelect">
+                    <option value="default">Default</option>
+                    <option value="vocal-clarity">Vocal Clarity</option>
+                    <option value="remove-mud">Remove Mud</option>
+                    <option value="tame-brightness">Tame Brightness</option>
+                    <option value="full-mix">Full Mix</option>
+                </select>
+                <div class="preset-buttons">
+                    <button id="savePreset">Save Preset</button>
+                    <button id="deletePreset">Delete Preset</button>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Audio Controls -->
+        <section class="audio-controls">
+            <button id="startAudio">Start Audio</button>
+            <button id="loadFile">Load Audio File</button>
+            <input type="file" id="fileInput" accept="audio/*" style="display:none;">
+            <div class="volume-control">
+                <label>Volume:</label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="50">
+            </div>
+        </section>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
